@@ -15,7 +15,7 @@ client_log_config = {
         "file": {  
             "class": "logging.FileHandler",
             "formatter": "default",
-            "filename": "iot_mgm_client.log",  
+            "filename": "/var/log/iot_mgm_client/iot_mgm_client.log",  
             "mode": "a", 
         },
     },
