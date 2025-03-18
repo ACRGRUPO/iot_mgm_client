@@ -15,7 +15,7 @@ class MetadataCollector:
         
         try:
             # Get kernel version
-            kernel = subprocess.check_output(["uname", "-r"], text=True).strip()
+            kernel = subprocess.check_output(["/usr/bin/uname", "-r"], text=True).strip()
             metadata["kernel"] = kernel
             
             # Get distribution info if available
