@@ -41,7 +41,7 @@ if [ "$1" == "install" ]; then
 
     echo "Setting up the installation directory..."
     # deploy to /opt/iot_mgm_client
-    sudo cp -r ./iot_mgm_client $INSTALL_DIR
+    sudo cp -r ../iot_mgm_client $INSTALL_DIR
     sudo chown -R $SERVICE_USER:$SERVICE_GROUP $INSTALL_DIR
     sudo chmod -R 755 $INSTALL_DIR
     echo "Installation directory setup complete."
