@@ -23,7 +23,7 @@ if [ "$1" == "install" ]; then
     # Create user if it doesn't exist
     if ! id -u "$SERVICE_USER" > /dev/null 2>&1; then
         echo "Creating user $SERVICE_USER with home directory..."
-        sudo adduser --system --home "/home/$SERVICE_USER" --ingroup "$SERVICE_GROUP" "$SERVICE_USER"
+        sudo adduser --home "/home/$SERVICE_USER" --ingroup "$SERVICE_GROUP" "$SERVICE_USER"
     fi
 
     # Create log directory if it doesn't exist and set proper ownership/permissions
