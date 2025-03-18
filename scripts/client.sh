@@ -9,8 +9,8 @@ LOG_DIR="/var/log/$PROGRAM_NAME"
 INSTALL_DIR="/opt/$PROGRAM_NAME"
 
 # check params "configure, install, uninstall, configure_Service"
-if [ "$1" != "configure" ] && [ "$1" != "install" ] && [ "$1" != "uninstall" ] && [ "$1" != "configure_Service" ]; then
-    echo "Usage: $0 [configure|install|uninstall|configure_Service]"
+if [ "$1" != "configure" ] && [ "$1" != "install" ] && [ "$1" != "uninstall" ] && [ "$1" != "configure_service" ]; then
+    echo "Usage: $0 [configure|install|uninstall|configure_service]"
     exit 1
 fi
 
@@ -83,7 +83,7 @@ if [ "$1" == "uninstall" ]; then
     sudo groupdel $SERVICE_GROUP
 fi
 
-if [ "$1" == "configure_Service" ]; then
+if [ "$1" == "configure_service" ]; then
     # copy the service file
     echo "Copying the service file..."
     sudo cp ./scripts/iot_mgm_client.service /etc/systemd/system/iot_mgm_client.service
