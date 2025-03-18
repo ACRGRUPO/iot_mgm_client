@@ -29,7 +29,7 @@ class MetadataCollector:
             
             # Get IP addresses
             ip_info = []
-            interfaces = subprocess.check_output(["ip", "-j", "addr"], text=True)
+            interfaces = subprocess.check_output(["/usr/bin/ip", "-j", "addr"], text=True)
             interfaces_data = json.loads(interfaces)
             
             for interface in interfaces_data:
