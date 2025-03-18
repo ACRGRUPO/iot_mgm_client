@@ -158,7 +158,7 @@ class RemoteClientAgent:
             
             # Build SSH command for reverse tunnel
             ssh_cmd = [
-                "ssh",
+                "/usr/bin/ssh",
                 "-vvv",
                 "-o", "StrictHostKeyChecking=no",
                 "-o", "ExitOnForwardFailure=yes",
