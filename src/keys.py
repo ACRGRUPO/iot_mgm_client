@@ -70,3 +70,14 @@ def remove_public_key_from_authorized_keys(key_path: str, authorized_keys_path: 
             if pub_key not in line:
                 f.write(line)
     logger.info("Public key removed from authorized_keys if it existed")
+
+
+def get_key(key_path: str, logger: logging.Logger = None) -> str:
+    """Get a key from the key file."""
+    logger = logger or logging.getLogger(__name__)
+    if not os.path.exists(key_path):
+        logger.error(f"Key file not found at {key_path}")
+        raise Exception("Key file missing")
+    with open(key_path, "r") as f:
+        key = f.read().strip()
+    return key

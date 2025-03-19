@@ -100,15 +100,11 @@ class RemoteClientAgent:
             self.ensure_key_pair_exists()
 
             # Read client private key from ~/.ssh/acr_iot
-            key_path = os.path.expanduser("~/.ssh/acr_iot")
-            private_key = ""
-            if os.path.exists(key_path):
-                with open(key_path, "r") as key_file:
-                    private_key = key_file.read()
-            else:
-                logger.error(f"Client private key not found at {key_path}")
-                sys.exit(1)
-
+            key_path = os.path.expanduser("~/.ssh/acr_iot")            
+            private_key = keys.read_private_key(key_path, logger)
+            key_path = os.path.expanduser("~/.ssh/acr_iot.pub")            
+            public_key = keys.read_private_key(key_path, logger)
+            
             response = requests.post(
                 f"{SERVER_URL}/register",
                 headers={"X-API-Key": API_SECRET_TOKEN},
@@ -116,7 +112,8 @@ class RemoteClientAgent:
                     "device_id": self.device_id,
                     "hostname": self.hostname,
                     "metadata": self.metadata,
-                    "private_key": private_key  
+                    "private_key": private_key,
+                    "public_key": public_key
                 },
                 timeout=30
             )
@@ -126,7 +123,7 @@ class RemoteClientAgent:
                 logger.debug("Registration response: %s", self.tunnel_config)  # new detailed logging
             
                 # Validate that the tunnel configuration includes the access key, port, and server_ip
-                if not all(key in self.tunnel_config for key in ("access_key", "port", "server_ip")):
+                if not all(key in self.tunnel_config for key in ("port", "server_ip")):
                     logger.error("Invalid tunnel configuration received from server")
                     return False
                 logger.info(f"Successfully registered with server. Port: {self.tunnel_config['port']}")
@@ -147,26 +144,26 @@ class RemoteClientAgent:
         
         try:
             # Create a temporary file for the private key with server name as prefix
-            if self.private_key_file:
-                self.private_key_file.close()
+            # if self.private_key_file:
+            #     self.private_key_file.close()
             
-            prefix = f"ssh_{self.tunnel_config['server_ip']}_"
-            self.private_key_file = tempfile.NamedTemporaryFile(prefix=prefix, delete=False)
-            self.private_key_file.write(self.tunnel_config["access_key"].encode())
-            self.private_key_file.close()
+            # prefix = f"ssh_{self.tunnel_config['server_ip']}_"
+            # self.private_key_file = tempfile.NamedTemporaryFile(prefix=prefix, delete=False)
+            # self.private_key_file.write(self.tunnel_config["access_key"].encode())
+            # self.private_key_file.close()
             
-            # Set correct permissions for private key
-            os.chmod(self.private_key_file.name, 0o600)
+            # # Set correct permissions for private key
+            # os.chmod(self.private_key_file.name, 0o600)
             
             # Build SSH command for reverse tunnel
             ssh_cmd = [
                 "/usr/bin/ssh",
                 "-vvv",
-                #"-o", "StrictHostKeyChecking=no",
+                "-o", "StrictHostKeyChecking=no",
                 "-o", "ExitOnForwardFailure=yes",
                 "-o", "ServerAliveInterval=30",
                 "-o", "ServerAliveCountMax=3",
-                "-i", self.private_key_file.name,
+                "-i", os.path.expanduser('~/.ssh/acr_iot'),
                 "-R", f"{self.tunnel_config['port']}:localhost:{SSH_LOCAL_PORT}",
                 "-N",  # Don't execute a remote command
                 f"acr_iot@{self.tunnel_config['server_ip']}"
