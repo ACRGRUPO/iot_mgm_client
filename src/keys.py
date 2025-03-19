@@ -71,6 +71,15 @@ def remove_public_key_from_authorized_keys(key_path: str, authorized_keys_path: 
                 f.write(line)
     logger.info("Public key removed from authorized_keys if it existed")
 
+def empty_know_hosts(logger: logging.Logger = None) -> None:
+    """Empty the known_hosts file."""
+    logger = logger or logging.getLogger(__name__)
+    known_hosts_path = os.path.expanduser("~/.ssh/known_hosts")
+    if not os.path.exists(known_hosts_path):
+        logger.info("known_hosts file does not exist")
+        return
+    open(known_hosts_path, "w").close()
+    logger.info("known_hosts file emptied")
 
 def read_key(key_path: str, logger: logging.Logger = None) -> str:
     """Get a key from the key file."""

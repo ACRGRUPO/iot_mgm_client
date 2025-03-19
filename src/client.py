@@ -93,7 +93,6 @@ class RemoteClientAgent:
         if self.ssh_process:
             logger.info("Terminating existing SSH process before registration")
             self.terminate_ssh_process()
-
             
         try:
             # Ensure the key pair exists
@@ -155,6 +154,9 @@ class RemoteClientAgent:
             # # Set correct permissions for private key
             # os.chmod(self.private_key_file.name, 0o600)
             
+            # New tunnel cleanup
+            keys.empty_know_hosts(logger)
+
             # Build SSH command for reverse tunnel
             ssh_cmd = [
                 "/usr/bin/ssh",
