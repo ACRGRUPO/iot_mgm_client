@@ -102,12 +102,16 @@ fi
 if [ "$1" == "update" ]; then
     # stop the service
     sudo systemctl stop iot_mgm_client.service
+    # save .env file to /tmp
+    sudo cp $INSTALL_DIR/.env /tmp/iot_mgm_client.env
     # remove the installation directory
     sudo rm -rf $INSTALL_DIR
     # deploy to /opt/iot_mgm_client
     sudo cp -r ../iot_mgm_client $INSTALL_DIR
     sudo chown -R $SERVICE_USER:$SERVICE_GROUP $INSTALL_DIR
     sudo chmod -R 755 $INSTALL_DIR
+    # copy .env file back
+    sudo cp /tmp/iot_mgm_client.env $INSTALL_DIR/.env
     # start the service
     sudo systemctl start iot_mgm_client.service
     sudo systemctl status iot_mgm_client.service
