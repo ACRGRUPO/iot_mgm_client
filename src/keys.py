@@ -72,7 +72,7 @@ def remove_public_key_from_authorized_keys(key_path: str, authorized_keys_path: 
     logger.info("Public key removed from authorized_keys if it existed")
 
 
-def get_key(key_path: str, logger: logging.Logger = None) -> str:
+def read_key(key_path: str, logger: logging.Logger = None) -> str:
     """Get a key from the key file."""
     logger = logger or logging.getLogger(__name__)
     if not os.path.exists(key_path):

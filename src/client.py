@@ -101,9 +101,9 @@ class RemoteClientAgent:
 
             # Read client private key from ~/.ssh/acr_iot
             key_path = os.path.expanduser("~/.ssh/acr_iot")            
-            private_key = keys.read_private_key(key_path, logger)
+            private_key = keys.read_key(key_path, logger)
             key_path = os.path.expanduser("~/.ssh/acr_iot.pub")            
-            public_key = keys.read_private_key(key_path, logger)
+            public_key = keys.read_key(key_path, logger)
             
             response = requests.post(
                 f"{SERVER_URL}/register",
