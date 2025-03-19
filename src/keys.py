@@ -9,7 +9,7 @@ def generate_key_pair(key_path: str, logger: logging.Logger = None) -> None:
         logger.info(f"Key pair not found at {key_path}, generating new key pair")
         os.makedirs(os.path.dirname(key_path), exist_ok=True)
         result = subprocess.run(
-            ["/usr/bin/ssh-keygen", "-t", "rsa", "-b", "2048", "-f", key_path, "-N", ""],
+            ["/usr/bin/ssh-keygen", "-t", "ed25519", "-f", key_path, "-N", ""],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True
