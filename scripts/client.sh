@@ -6,6 +6,7 @@ SERVICE_GROUP="acr_iot"
 PROGRAM_NAME="iot_mgm_client"
 LOG_DIR="/var/log/$PROGRAM_NAME"
 INSTALL_DIR="/opt/$PROGRAM_NAME"
+SERVICE_FILE="/etc/systemd/system/$PROGRAM_NAME.service"
 
 # check params "configure, install, uninstall, configure_Service"
 if [ "$1" != "configure" ] && [ "$1" != "install" ] && [ "$1" != "uninstall" ] && [ "$1" != "configure_service" ]; then
@@ -47,7 +48,7 @@ if [ "$1" == "install" ]; then
 
     # copy the service file
     echo "Copying the service file..."
-    sudo cp ./scripts/iot_mgm_client.service /etc/systemd/system/iot_mgm_client.service
+    sudo cp ./scripts/iot_mgm_client.service $SERVICE_FILE
 fi
 
 if [ "$1" == "configure" ]; then
@@ -85,14 +86,14 @@ fi
 if [ "$1" == "configure_service" ]; then
     # copy the service file
     echo "Copying the service file..."
-    sudo cp ./scripts/iot_mgm_client.service /etc/systemd/system/iot_mgm_client.service
+    sudo cp ./scripts/iot_mgm_client.service $SERVICE_FILE
     echo "Updating the service file..."
     # update the service file
-    sudo sed -i "s|WorkingDirectory=.*|WorkingDirectory=$INSTALL_DIR|" /etc/systemd/system/iot_mgm_client.service
-    sudo sed -i "s|Environment=.*|Environment=$INSTALL_DIR:%PATH%|" /etc/systemd/system/iot_mgm_client.service
-    sudo sed -i "s|ExecStart=.*|ExecStart=$INSTALL_DIR/iot_mgm_client|" /etc/systemd/system/iot_mgm_client.service
-    sudo sed -i "s|User=.*|User=$SERVICE_USER|" /etc/systemd/system/iot_mgm_client.service
-    sudo sed -i "s|Group=.*|Group=$SERVICE_GROUP|" /etc/systemd/system/iot_mgm_client.service 
+    sudo sed -i "s|WorkingDirectory=.*|WorkingDirectory=$INSTALL_DIR|" "$SERVICE_FILE"
+    sudo sed -i "s#Environment=PATH=.*:\(\$PATH\)\$#Environment=PATH=${INSTALL_DIR}:\1#g" "$SERVICE_FILE"
+    sudo sed -i "s|ExecStart=.*|ExecStart=$INSTALL_DIR/iot_mgm_client|" "$SERVICE_FILE"
+    sudo sed -i "s|User=.*|User=$SERVICE_USER|" "$SERVICE_FILE"
+    sudo sed -i "s|Group=.*|Group=$SERVICE_GROUP|" "$SERVICE_FILE"
     # show the service file
-    sudo cat /etc/systemd/system/iot_mgm_client.service   
+    sudo cat $SERVICE_FILE
 fi
