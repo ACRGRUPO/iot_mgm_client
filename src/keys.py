@@ -88,5 +88,5 @@ def read_key(key_path: str, logger: logging.Logger = None) -> str:
         logger.error(f"Key file not found at {key_path}")
         raise Exception("Key file missing")
     with open(key_path, "r") as f:
-        key = f.read().strip()
+        key = f.read()
     return key
