@@ -8,8 +8,7 @@ Type=simple
 User=torno             
 WorkingDirectory=/home/user
 Environment=PATH=/home/user/iot_mgm_client:$PATH
-ExecStart=/usr/bin/python3 /home/user/iot_mgm_client/src/client.py   
-EnvironmentFile=/home/torno/iot_mgm_client/.env
+ExecStart=/usr/bin/python3 ./src/client.py   
 Restart=always
 RestartSec=3
 
