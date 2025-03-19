@@ -162,7 +162,7 @@ class RemoteClientAgent:
             ssh_cmd = [
                 "/usr/bin/ssh",
                 "-vvv",
-                "-o", "StrictHostKeyChecking=no",
+                #"-o", "StrictHostKeyChecking=no",
                 "-o", "ExitOnForwardFailure=yes",
                 "-o", "ServerAliveInterval=30",
                 "-o", "ServerAliveCountMax=3",
