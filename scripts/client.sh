@@ -9,8 +9,8 @@ INSTALL_DIR="/opt/$PROGRAM_NAME"
 SERVICE_FILE="/etc/systemd/system/$PROGRAM_NAME.service"
 
 # check params "configure, install, uninstall, configure_Service"
-if [ "$1" != "configure" ] && [ "$1" != "install" ] && [ "$1" != "uninstall" ] && [ "$1" != "configure_service" ]; then
-    echo "Usage: $0 [configure|install|uninstall|configure_service]"
+if [ "$1" != "configure" ] && [ "$1" != "install" ] && [ "$1" != "uninstall" ] && [ "$1" != "configure_service" ] && [ "$1" != "update" ]; then
+    echo "Usage: $0 [configure|install|uninstall|configure_service|uodate]"
     exit 1
 fi
 
@@ -63,6 +63,7 @@ if [ "$1" == "configure" ]; then
 
     # enable the service
     sudo systemctl enable iot_mgm_client.service
+    sudo systemctl status iot_mgm_client.service
 fi
 
 if [ "$1" == "uninstall" ]; then
@@ -91,9 +92,23 @@ if [ "$1" == "configure_service" ]; then
     # update the service file
     sudo sed -i "s|WorkingDirectory=.*|WorkingDirectory=$INSTALL_DIR|" "$SERVICE_FILE"
     sudo sed -i "s#Environment=PATH=.*:\(\$PATH\)\$#Environment=PATH=${INSTALL_DIR}:\1#g" "$SERVICE_FILE"
-    sudo sed -i "s|ExecStart=.*|ExecStart=$INSTALL_DIR/iot_mgm_client|" "$SERVICE_FILE"
+    sudo sed -i "s|ExecStart=.*|ExecStart=/usr/bin/python3 ./src/client.py|" "$SERVICE_FILE"
     sudo sed -i "s|User=.*|User=$SERVICE_USER|" "$SERVICE_FILE"
     sudo sed -i "s|Group=.*|Group=$SERVICE_GROUP|" "$SERVICE_FILE"
     # show the service file
     sudo cat $SERVICE_FILE
+fi
+
+if [ "$1" == "update" ]; then
+    # stop the service
+    sudo systemctl stop iot_mgm_client.service
+    # remove the installation directory
+    sudo rm -rf $INSTALL_DIR
+    # deploy to /opt/iot_mgm_client
+    sudo cp -r ../iot_mgm_client $INSTALL_DIR
+    sudo chown -R $SERVICE_USER:$SERVICE_GROUP $INSTALL_DIR
+    sudo chmod -R 755 $INSTALL_DIR
+    # start the service
+    sudo systemctl start iot_mgm_client.service
+    sudo systemctl status iot_mgm_client.service
 fi

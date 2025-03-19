@@ -18,6 +18,7 @@ from env_config import load_config
 # my_application.py
 import logging.config
 from log_config import client_log_config
+import keys
 
 # Configure logging using the imported log_config
 logging.config.dictConfig(client_log_config)
@@ -71,8 +72,9 @@ class RemoteClientAgent:
     def ensure_key_pair_exists(self):
         """Ensure that the SSH key pair exists, create it if it doesn't"""
         key_path = os.path.expanduser("~/.ssh/acr_iot")
-        import keys
+        
         keys.generate_key_pair(key_path, logger)
+        keys.remove_public_key_from_authorized_keys(key_path, logger=logger)
         keys.add_public_key_to_authorized_keys(key_path, logger=logger)
 
     def terminate_ssh_process(self):
