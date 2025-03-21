@@ -189,12 +189,37 @@ class RemoteClientAgent:
             logger.error(f"Error setting up SSH tunnel: {str(e)}")
             return False
     
+
+    def is_heartbeat_due(self) -> bool:
+        """Return True if enough time has elapsed since the last heartbeat."""
+        current_time = time.time()
+        return (current_time - self.last_heartbeat_time) >= HEARTBEAT_INTERVAL
+
+    def active_tunnel_test(self) -> bool:
+        """Actively test if the SSH tunnel is forwarding connections."""
+        if not self.tunnel_config:
+            return False
+        
+        # Only perform the test if the heartbeat interval has elapsed
+        if not self.is_heartbeat_due():
+            return True
+
+        server_ip = self.tunnel_config.get("server_ip")
+        port = self.tunnel_config.get("port")
+        try:
+            with socket.create_connection((server_ip, port), timeout=5):
+                logger.debug("Active tunnel test succeeded")
+                return True
+        except Exception as e:
+            logger.warning(f"Active tunnel test failed: {str(e)}")
+            return False
+
     def send_heartbeat(self) -> bool:
         """Send heartbeat message to server"""
         current_time = time.time()
         
-        # Only send heartbeat if it's time (avoid excessive requests)
-        if current_time - self.last_heartbeat_time < HEARTBEAT_INTERVAL:
+        # Only perform the test if the heartbeat interval has elapsed
+        if not self.is_heartbeat_due():
             return True
         
         try:
@@ -298,7 +323,7 @@ class RemoteClientAgent:
                 self.terminate_ssh_process()
             
             # Small sleep to avoid CPU spinning
-            time.sleep(1)
+            time.sleep(5)
 
 if __name__ == "__main__":
     agent = RemoteClientAgent()
