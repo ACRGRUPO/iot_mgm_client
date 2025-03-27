@@ -5,9 +5,9 @@ StartLimitIntervalSec=3
 
 [Service]
 Type=simple
-User=torno             
-WorkingDirectory=/home/user
-Environment=PATH=/home/user/iot_mgm_client:$PATH
+User=acr_iot             
+WorkingDirectory=/opt/iot_mgm_client
+Environment=PATH=/opt/iot_mgm_client/scripts:$PATH
 ExecStart=/usr/bin/python3 ./src/client.py   
 Restart=always
 RestartSec=3

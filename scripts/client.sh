@@ -10,7 +10,7 @@ SERVICE_FILE="/etc/systemd/system/$PROGRAM_NAME.service"
 
 # check params "configure, install, uninstall, configure_Service"
 if [ "$1" != "configure" ] && [ "$1" != "install" ] && [ "$1" != "uninstall" ] && [ "$1" != "configure_service" ] && [ "$1" != "update" ]; then
-    echo "Usage: $0 [configure|install|uninstall|configure_service|uodate]"
+    echo "Usage: $0 [configure|install|uninstall|configure_service|update]"
     exit 1
 fi
 
