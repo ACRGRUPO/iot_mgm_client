@@ -197,8 +197,8 @@ class RemoteClientAgent:
 
     def active_tunnel_test(self) -> bool:
         """Actively test if the SSH tunnel is forwarding connections."""
-        if not self.tunnel_config:
-            return False
+        if not self.tunnel_config or not self.ssh_process:
+            return False        
         
         # Only perform the test if the heartbeat interval has elapsed
         if not self.is_heartbeat_due():
@@ -211,7 +211,7 @@ class RemoteClientAgent:
                 logger.debug("Active tunnel test succeeded")
                 return True
         except Exception as e:
-            logger.warning(f"Active tunnel test failed: {str(e)}")
+            logger.warning(f"Active tunnel test failed: {str(e)}")            
             return False
 
     def send_heartbeat(self) -> bool:
@@ -288,13 +288,14 @@ class RemoteClientAgent:
                 logger.warning(f"Error removing private key file: {str(e)}")
         
         sys.exit(0)
-
-    # New helper method to increment reconnect delay
+    
     def _increase_reconnect_delay(self):
+        """ Increase the reconnect delay exponentially, up to a maximum value """
         self.reconnect_delay = min(self.reconnect_delay * 2, MAX_RECONNECT_DELAY)
 
-    # New helper method to log, sleep and update reconnect delay
+
     def _retry(self, action: str):
+        """ Log a retry message and sleep for the reconnect delay """
         logger.error(f"{action} failed, retrying in {self.reconnect_delay} seconds")
         time.sleep(self.reconnect_delay)
         self._increase_reconnect_delay()
@@ -321,6 +322,12 @@ class RemoteClientAgent:
             if not self.send_heartbeat() and self.ssh_process:
                 logger.info("Heartbeat failed: terminating SSH tunnel to force reconnection")
                 self.terminate_ssh_process()
+            
+            # Perform active tunnel test
+            if self.tunnel_config and self.ssh_process:
+                if not self.active_tunnel_test():
+                   logger.info("Active tunnel test failed: terminating SSH tunnel to force reconnection")
+                     self.terminate_ssh_process()
             
             # Small sleep to avoid CPU spinning
             time.sleep(5)
