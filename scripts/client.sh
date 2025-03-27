@@ -59,9 +59,11 @@ if [ "$1" == "configure" ]; then
     sudo chmod 640 $LOG_DIR/iot_mgm_client.log
 
     # reload the systemd manager configuration
+    echo "Reloading the systemd manager configuration..."
     sudo systemctl daemon-reload
 
     # enable the service
+    echo "Enabling the service..."
     sudo systemctl enable iot_mgm_client.service
     sudo systemctl status iot_mgm_client.service
 fi
@@ -100,19 +102,41 @@ if [ "$1" == "configure_service" ]; then
 fi
 
 if [ "$1" == "update" ]; then
+    echo "You are about to update the service. This will stop the service, remove the installation directory, and deploy the new version."
+    read -p "Do you want to continue? (y/n) " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        exit 1
+    fi
+    # check if we are inside the git repository
+    if [ ! -d ".git" ]; then
+        echo "This script must be run from the git repository."
+        exit 1
+    fi
+    echo "Updating the service..."
+    git reset --hard
+    git fetch
+    git pull
+    chmod +x ./scripts/client.sh
+    echo "Stopping the service..."
     # stop the service
     sudo systemctl stop iot_mgm_client.service
     # save .env file to /tmp
+    echo "Saving the .env file..."
     sudo cp $INSTALL_DIR/.env /tmp/iot_mgm_client.env
     # remove the installation directory
+    echo "Cleaning up the installation directory..."
     sudo rm -rf $INSTALL_DIR
+    echo "Deploying the new version..."
     # deploy to /opt/iot_mgm_client
     sudo cp -r ../iot_mgm_client $INSTALL_DIR
     sudo chown -R $SERVICE_USER:$SERVICE_GROUP $INSTALL_DIR
     sudo chmod -R 755 $INSTALL_DIR
+    echo "Restoring the .env file..."
     # copy .env file back
     sudo cp /tmp/iot_mgm_client.env $INSTALL_DIR/.env
     # start the service
+    echo "Starting the service..."
     sudo systemctl start iot_mgm_client.service
     sudo systemctl status iot_mgm_client.service
 fi
