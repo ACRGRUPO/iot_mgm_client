@@ -327,7 +327,7 @@ class RemoteClientAgent:
             if self.tunnel_config and self.ssh_process:
                 if not self.active_tunnel_test():
                    logger.info("Active tunnel test failed: terminating SSH tunnel to force reconnection")
-                     self.terminate_ssh_process()
+                   self.terminate_ssh_process()
             
             # Small sleep to avoid CPU spinning
             time.sleep(5)
