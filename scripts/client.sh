@@ -152,5 +152,5 @@ if [ "$1" == "update" ]; then
         sudo systemctl status iot_mgm_client.service
     else
         echo "Service failed to restart. Check the logs in /var/log/iot_mgm_client/iot_mgm_client.log and update.log."
-
+    fi
 fi
