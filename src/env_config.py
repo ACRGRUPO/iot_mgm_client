@@ -49,7 +49,7 @@ def load_config() -> dict:
     config["MAX_RECONNECT_DELAY"] = int(env_vars.get("MAX_RECONNECT_DELAY", "300"))
     config["LOG_FILE"] = env_vars.get("LOG_FILE", "/var/log/acr_iot_client.log")
     config["KEY_FILE"] = env_vars.get("KEY_FILE", "")
-    config["LOG_LEVEL"] = env_vars.get("LOGLEVEL", "INFO")
+    config["LOG_LEVEL"] = env_vars.get("LOG_LEVEL", "INFO")
 
     validate_config(config)
               
