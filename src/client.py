@@ -205,12 +205,16 @@ class RemoteClientAgent:
         if not self.is_tunnel_due():
             return True
         
+        # temprary disable tunnel test
+        return True
+
         server_ip = self.tunnel_config.get("server_ip")
         port = self.tunnel_config.get("port")        
         logger.debug(f"Testing tunnel to {server_ip}:{port}")        
         try:
             with socket.create_connection((server_ip, port), timeout=5):
                 logger.debug("Active tunnel test succeeded")
+                self.last_tunnel_time = time.time()
                 return True
         except Exception as e:
             logger.warning(f"Active tunnel test failed: {str(e)}")            
