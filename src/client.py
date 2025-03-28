@@ -49,6 +49,7 @@ class RemoteClientAgent:
         self.reconnect_delay = 1
         self.private_key_file = None
         self.last_heartbeat_time = 0
+        self.last_tunnel_time = 0
         
         # Setup signal handlers
         signal.signal(signal.SIGINT, self.handle_exit)
@@ -144,25 +145,14 @@ class RemoteClientAgent:
             return False
         
         try:
-            # Create a temporary file for the private key with server name as prefix
-            # if self.private_key_file:
-            #     self.private_key_file.close()
-            
-            # prefix = f"ssh_{self.tunnel_config['server_ip']}_"
-            # self.private_key_file = tempfile.NamedTemporaryFile(prefix=prefix, delete=False)
-            # self.private_key_file.write(self.tunnel_config["access_key"].encode())
-            # self.private_key_file.close()
-            
-            # # Set correct permissions for private key
-            # os.chmod(self.private_key_file.name, 0o600)
-            
+                        
             # New tunnel cleanup
             keys.empty_know_hosts(logger)
 
             # Build SSH command for reverse tunnel
             ssh_cmd = [
                 "/usr/bin/ssh",
-                "-vvv",
+                "-vvv" if LOG_LEVEL == "DEBUG" else "-q",
                 "-o", "StrictHostKeyChecking=no",
                 "-o", "ExitOnForwardFailure=yes",
                 "-o", "ServerAliveInterval=30",
@@ -197,17 +187,23 @@ class RemoteClientAgent:
         current_time = time.time()
         return (current_time - self.last_heartbeat_time) >= HEARTBEAT_INTERVAL
 
+    def is_tunnel_due(self) -> bool:
+        """Return True if enough time has elapsed since the last tunnel check."""
+        current_time = time.time()
+        return (current_time - self.last_tunnel_time) >= TUNNEL_INTERVAL
+
     def active_tunnel_test(self) -> bool:
         """Actively test if the SSH tunnel is forwarding connections."""
         if not self.tunnel_config or not self.ssh_process:
             return False        
         
         # Only perform the test if the heartbeat interval has elapsed
-        if not self.is_heartbeat_due():
+        if not self.is_tunnel_due():
             return True
-
+        
         server_ip = self.tunnel_config.get("server_ip")
-        port = self.tunnel_config.get("port")
+        port = self.tunnel_config.get("port")        
+        logger.debug(f"Testing tunnel to {server_ip}:{port}")        
         try:
             with socket.create_connection((server_ip, port), timeout=5):
                 logger.debug("Active tunnel test succeeded")
@@ -328,7 +324,7 @@ class RemoteClientAgent:
             # Perform active tunnel test
             if self.tunnel_config and self.ssh_process:
                 if not self.active_tunnel_test():
-                   logger.info("Active tunnel test failed: terminating SSH tunnel to force reconnection")
+                   logger.warning("Active tunnel test failed: terminating SSH tunnel to force reconnection")
                    self.terminate_ssh_process()
             
             # Small sleep to avoid CPU spinning

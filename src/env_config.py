@@ -45,6 +45,7 @@ def load_config() -> dict:
     ssh_local_port = env_vars.get("SSH_LOCAL_PORT", "22")
     config["SSH_LOCAL_PORT"] = int(ssh_local_port) if ssh_local_port.isdigit() else ""
     config["HEARTBEAT_INTERVAL"] = int(env_vars.get("HEARTBEAT_INTERVAL", "60"))
+    config["TUNNEL_INTERVAL"] = int(env_vars.get("TUNNEL_INTERVAL", "120"))
     config["MAX_RECONNECT_DELAY"] = int(env_vars.get("MAX_RECONNECT_DELAY", "300"))
     config["LOG_FILE"] = env_vars.get("LOG_FILE", "/var/log/acr_iot_client.log")
     config["KEY_FILE"] = env_vars.get("KEY_FILE", "")
