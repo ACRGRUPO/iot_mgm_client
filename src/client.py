@@ -38,6 +38,9 @@ LOG_FILE = config["LOG_FILE"]
 LOG_LEVEL = config["LOG_LEVEL"].upper()
 
 logger.setLevel(getattr(logging, LOG_LEVEL, logging.INFO))
+logger.info(f"===== Starting Remote Client Agent for device {DEVICE_ID}")
+logger.info(f"Server URL: {SERVER_URL}")
+logger.info(f"Log Level.: {LOG_LEVEL}")
 
 class RemoteClientAgent:
     def __init__(self):
@@ -290,7 +293,6 @@ class RemoteClientAgent:
     def _increase_reconnect_delay(self):
         """ Increase the reconnect delay exponentially, up to a maximum value """
         self.reconnect_delay = min(self.reconnect_delay * 2, MAX_RECONNECT_DELAY)
-
 
     def _retry(self, action: str):
         """ Log a retry message and sleep for the reconnect delay """
