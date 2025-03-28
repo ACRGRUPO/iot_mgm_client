@@ -125,6 +125,7 @@ if [ "$1" == "update" ]; then
     git fetch
     git pull
     chmod +x ./scripts/client.sh
+    chmod +x ./scripts/restart_service.sh
     
     # save .env file to /tmp
     echo "Saving the .env file..."
