@@ -147,10 +147,7 @@ if [ "$1" == "update" ]; then
     sudo nohup ./scripts/restart_service.sh > update.log 2>&1 &
     backgroup_pid=$!
     sleep 5
-    if ps -p $backgroup_pid > /dev/null
-    then        
-        sudo systemctl status iot_mgm_client.service
-    else
-        echo "Service failed to restart. Check the logs in /var/log/iot_mgm_client/iot_mgm_client.log and update.log."
-    fi
+    sudo systemctl status iot_mgm_client.service
+    echo "Update complete."
+    echo "You can check the update.log file for more details."
 fi
