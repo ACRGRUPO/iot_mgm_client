@@ -35,7 +35,9 @@ SSH_LOCAL_PORT = config["SSH_LOCAL_PORT"]
 HEARTBEAT_INTERVAL = config["HEARTBEAT_INTERVAL"]
 MAX_RECONNECT_DELAY = config["MAX_RECONNECT_DELAY"]
 LOG_FILE = config["LOG_FILE"]
+LOG_LEVEL = config["LOG_LEVEL"].upper()
 
+logger.setLevel(getattr(logging, LOG_LEVEL, logging.INFO))
 
 class RemoteClientAgent:
     def __init__(self):
