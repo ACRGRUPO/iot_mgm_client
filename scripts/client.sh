@@ -69,6 +69,13 @@ if [ "$1" == "configure" ]; then
 fi
 
 if [ "$1" == "uninstall" ]; then
+    echo "You are about to uninstall the service. This will stop the service, remove the installation directory"
+    echo "You must do it locally on the device."
+    read -p "Do you want to continue? (y/n) " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        exit 1
+    fi
     echo "Uninstalling the service..."
     # stop the service
     sudo systemctl stop iot_mgm_client.service
@@ -118,9 +125,7 @@ if [ "$1" == "update" ]; then
     git fetch
     git pull
     chmod +x ./scripts/client.sh
-    echo "Stopping the service..."
-    # stop the service
-    sudo systemctl stop iot_mgm_client.service
+    
     # save .env file to /tmp
     echo "Saving the .env file..."
     sudo cp $INSTALL_DIR/.env /tmp/iot_mgm_client.env
@@ -135,8 +140,7 @@ if [ "$1" == "update" ]; then
     echo "Restoring the .env file..."
     # copy .env file back
     sudo cp /tmp/iot_mgm_client.env $INSTALL_DIR/.env
-    # start the service
-    echo "Starting the service..."
-    sudo systemctl start iot_mgm_client.service
-    sudo systemctl status iot_mgm_client.service
+    
+    # restart the service
+    nohup ./scripts/restart_service.sh &
 fi
