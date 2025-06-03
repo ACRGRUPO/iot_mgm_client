@@ -41,14 +41,14 @@ if [ "$1" == "install" ]; then
 
     echo "Setting up the installation directory..."
     # deploy to /opt/iot_mgm_client
-    sudo cp -r ../iot_mgm_client $INSTALL_DIR
+    sudo cp -r ~/iot_mgm_client $INSTALL_DIR
     sudo chown -R $SERVICE_USER:$SERVICE_GROUP $INSTALL_DIR
     sudo chmod -R 755 $INSTALL_DIR
     echo "Installation directory setup complete."
 
     # copy the service file
     echo "Copying the service file..."
-    sudo cp ./scripts/iot_mgm_client.service $SERVICE_FILE
+    sudo cp ~/iot_mgm_client/scripts/iot_mgm_client.service $SERVICE_FILE
 fi
 
 if [ "$1" == "configure" ]; then
@@ -135,7 +135,7 @@ if [ "$1" == "update" ]; then
     sudo rm -rf $INSTALL_DIR
     echo "Deploying the new version..."
     # deploy to /opt/iot_mgm_client
-    sudo cp -r ../iot_mgm_client $INSTALL_DIR
+    sudo cp -r ~/iot_mgm_client $INSTALL_DIR
     sudo chown -R $SERVICE_USER:$SERVICE_GROUP $INSTALL_DIR
     sudo chmod -R 755 $INSTALL_DIR
     echo "Restoring the .env file..."
